@@ -117,7 +117,7 @@ spec:
               mountPath: /registration
           ports:
             - containerPort: 9809
-              name: registrar-health
+              name: registrar-hz
           livenessProbe:
             exec:
               command:
