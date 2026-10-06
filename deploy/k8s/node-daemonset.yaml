@@ -62,6 +62,9 @@ spec:
               mountPropagation: Bidirectional
             - name: device-dir
               mountPath: /dev
+            - name: udev-dir
+              mountPath: /run/udev
+              readOnly: true
             - name: cloud-init-dir
               mountPath: /run/cloud-init/
             - name: sys-dir
@@ -114,7 +117,7 @@ spec:
               mountPath: /registration
           ports:
             - containerPort: 9809
-              name: healthz
+              name: registrar-health
           livenessProbe:
             exec:
               command:
@@ -170,6 +173,10 @@ spec:
         - name: device-dir
           hostPath:
             path: /dev
+            type: Directory
+        - name: udev-dir
+          hostPath:
+            path: /run/udev
             type: Directory
         - name: registration-dir
           hostPath:

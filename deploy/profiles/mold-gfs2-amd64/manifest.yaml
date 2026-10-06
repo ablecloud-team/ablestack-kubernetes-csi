@@ -1,3 +1,20 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cloudstack-csi-node
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudstack-csi-node
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "10%"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cloudstack-csi-node
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -531,6 +548,9 @@ spec:
           mountPath: /sys
         - name: cloudstack-conf
           mountPath: /etc/cloudstack-csi-driver
+        - name: udev-dir
+          mountPath: /run/udev
+          readOnly: true
         ports:
         - name: healthz
           containerPort: 9808
@@ -642,6 +662,10 @@ spec:
       - name: cloudstack-conf
         secret:
           secretName: cloudstack-secret
+      - name: udev-dir
+        hostPath:
+          path: /run/udev
+          type: Directory
 ---
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshotClass
