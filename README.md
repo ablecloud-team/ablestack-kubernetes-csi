@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: Apache-2.0
+Licensed under the Apache License, Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0
+-->
 # ABLESTACK Kubernetes CSI
 
 Mold HMAC-SHA256 API 인증을 사용하는 Kubernetes CSI 드라이버입니다. CloudStack CSI의 `main` commit `206ccb52ea976350173ebfcbccb542445996f2de`(SDK v2.19.1 업데이트 포함)을 기준으로 하며, 내부 Mold SDK v2.19.2-mold-test.2를 사용합니다. 원본 설명과 지원 기능은 [README.cloudstack.md](README.cloudstack.md)에 보존합니다.

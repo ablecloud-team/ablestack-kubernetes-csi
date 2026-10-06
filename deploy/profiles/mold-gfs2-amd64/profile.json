@@ -10,8 +10,8 @@
   },
   "qualification": "origin-trial-runtime-gates-required",
   "files": {
-    "manifest.yaml": "29cb8731f7f8449793f67ab013aa810b50f2b5c5efc6fbb7457499624c1e58a4",
-    "snapshot-crds.yaml": "52cadf0a145f4d57e6076f82dc8d657dbce71d07d92cc9ba9a518beeef753f8f"
+    "manifest.yaml": "de166afa047dc9a5e8df6889669ef5ade71f004d289a267035e81c247df36144",
+    "snapshot-crds.yaml": "d27e8aff5361dc85a4e5e09ea65194f54f4a567c2a50698a939bcf0149a4b841"
   },
   "images": {
     "ghcr.io/cloudstack/cloudstack-csi-driver:main": "ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:e1ef5f7df4dbd155d0e57f6faa0b727b23a79482fa7dac0f5bbfff69932d0afb",
