@@ -159,7 +159,10 @@ func (m *mounter) getDevicePathBySerialID(ctx context.Context, volumeID string) 
 		source := filepath.Join(diskIDPath, prefix+serial)
 		_, err := os.Stat(source)
 		if err == nil {
-			return source, nil
+			if m.verifyDevice(ctx, source, volumeID) {
+				return source, nil
+			}
+			continue
 		}
 		if !os.IsNotExist(err) {
 			logger.Error(err, "Failed to stat device path", "path", source)
