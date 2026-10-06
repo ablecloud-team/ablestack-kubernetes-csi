@@ -23,6 +23,7 @@ package mount
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"os/exec"
@@ -226,15 +227,7 @@ func (m *mounter) verifyDevice(ctx context.Context, devicePath string, volumeID 
 	}
 	logger.V(5).Info("Device size retrieved", "devicePath", devicePath, "volumeID", volumeID, "sizeBytes", size)
 
-	mounted, err := m.isDeviceMounted(devicePath)
-	if err != nil {
-		logger.V(4).Info("Failed to check if device is mounted", "devicePath", devicePath, "volumeID", volumeID, "error", err)
-
-		return false
-	}
-	if mounted {
-		logger.V(4).Info("Device is already mounted", "devicePath", devicePath, "volumeID", volumeID)
-
+	if size <= 0 {
 		return false
 	}
 
@@ -244,22 +237,33 @@ func (m *mounter) verifyDevice(ctx context.Context, devicePath string, volumeID 
 
 		return false
 	}
-	logger.V(5).Info("Device properties retrieved", "devicePath", devicePath, "volumeID", volumeID, "properties", props)
-
+	if !deviceSerialMatches(props, volumeID) {
+		logger.V(4).Info("Device serial does not match requested volume", "devicePath", devicePath, "volumeID", volumeID)
+		return false
+	}
 	return true
 }
 
-func (m *mounter) isDeviceMounted(devicePath string) (bool, error) {
-	output, err := m.Exec.Command("grep", devicePath, "/proc/mounts").Output()
-	if err != nil {
-		if strings.Contains(err.Error(), "exit status 1") {
-			return false, nil
-		}
-
-		return false, err
+// Only the volume UUID or CloudStack's KVM serial encoding proves identity.
+// A readable, unmounted disk is not sufficient: it may be another PVC whose
+// asynchronous detach has not finished yet.
+func deviceSerialMatches(props map[string]string, volumeID string) bool {
+	full := strings.ToLower(strings.ReplaceAll(volumeID, "-", ""))
+	if len(full) != 32 {
+		return false
 	}
-
-	return len(output) > 0, nil
+	if _, err := hex.DecodeString(full); err != nil {
+		return false
+	}
+	serial := strings.TrimSpace(props["ID_SERIAL_SHORT"])
+	if serial == "" {
+		serial = strings.TrimSpace(props["ID_SERIAL"])
+		for _, prefix := range []string{"0QEMU_QEMU_HARDDISK_", "QEMU_QEMU_HARDDISK_"} {
+			serial = strings.TrimPrefix(serial, prefix)
+		}
+	}
+	serial = strings.ToLower(strings.ReplaceAll(serial, "-", ""))
+	return serial == full || serial == diskUUIDToSerial(full)
 }
 
 func (m *mounter) getDeviceProperties(devicePath string) (map[string]string, error) {
