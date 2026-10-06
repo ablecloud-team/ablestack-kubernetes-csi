@@ -6,6 +6,7 @@ toolchain go1.23.5
 
 require (
 	github.com/ablecloud-team/ablestack-mold-go/v2 v2.19.2-mold-test.2
+	github.com/cloudstack/cloudstack-csi-driver v0.0.0-20260924155126-206ccb52ea97
 	github.com/container-storage-interface/spec v1.9.0
 	github.com/hashicorp/go-uuid v1.0.3
 	github.com/kubernetes-csi/csi-lib-utils v0.17.0
@@ -20,18 +21,19 @@ require (
 	k8s.io/apimachinery v0.29.7
 	k8s.io/client-go v0.29.7
 	k8s.io/component-base v0.29.7
-	k8s.io/klog/v2 v2.110.1
+	k8s.io/klog/v2 v2.140.0
 	k8s.io/mount-utils v0.29.7
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 )
 
 require (
+	github.com/apache/cloudstack-go/v2 v2.19.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
-	github.com/go-logr/logr v1.3.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/zapr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
