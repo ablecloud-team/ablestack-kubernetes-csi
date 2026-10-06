@@ -275,3 +275,14 @@ func (f *fakeConnector) DeleteSnapshot(_ context.Context, snapshotID string) err
 
 	return nil
 }
+
+func (f *fakeConnector) MarkVolumeSnapshotSource(_ context.Context, volumeID, snapshotID string) error {
+	v, ok := f.volumesByID[volumeID]
+	if !ok {
+		return cloud.ErrNotFound
+	}
+	v.SnapshotID = snapshotID
+	f.volumesByID[volumeID] = v
+	f.volumesByName[v.Name] = v
+	return nil
+}

@@ -104,6 +104,16 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	}
 	defer cs.volumeLocks.Release(name)
 
+	// A retry must refer to the same data source, rather than adopting a failed or unrelated volume.
+	var snapshotID string
+	if src := req.GetVolumeContentSource(); src != nil {
+		if snap := src.GetSnapshot(); snap != nil && snap.GetSnapshotId() != "" {
+			snapshotID = snap.GetSnapshotId()
+		} else {
+			return nil, status.Error(codes.InvalidArgument, "Only a nonempty snapshot content source is supported")
+		}
+	}
+
 	// Check if a volume with that name already exists.
 	vol, err := cs.connector.GetVolumeByName(ctx, name)
 	if err != nil {
@@ -116,13 +126,19 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		if ok, message := checkVolumeSuitable(vol, diskOfferingID, req.GetCapacityRange(), req.GetAccessibilityRequirements()); !ok {
 			return nil, status.Errorf(codes.AlreadyExists, "Volume %v already exists but does not satisfy request: %s", name, message)
 		}
+		if vol.SnapshotID != snapshotID {
+			return nil, status.Error(codes.AlreadyExists, "Existing volume has a different snapshot content source")
+		}
+		if vol.State != "Ready" && !(snapshotID == "" && vol.State == "Allocated") {
+			return nil, status.Error(codes.FailedPrecondition, "Existing volume is not in a usable storage state")
+		}
 		// Existing volume is ok.
 		resp := &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
 				VolumeId:      vol.ID,
 				CapacityBytes: vol.Size,
 				VolumeContext: req.GetParameters(),
-				// ContentSource: req.GetVolumeContentSource(), TODO: snapshot support.
+				ContentSource: req.GetVolumeContentSource(),
 				AccessibleTopology: []*csi.Topology{
 					Topology{ZoneID: vol.ZoneID}.ToCSI(),
 				},
@@ -130,14 +146,6 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		}
 
 		return resp, nil
-	}
-
-	// Check if this is a volume from snapshot
-	var snapshotID string
-	if src := req.GetVolumeContentSource(); src != nil {
-		if snap := src.GetSnapshot(); snap != nil {
-			snapshotID = snap.GetSnapshotId()
-		}
 	}
 
 	// We have to create the volume.
@@ -174,6 +182,9 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 			return nil, status.Errorf(codes.Internal, "Cannot create volume from snapshot %s: %v", snapshotID, err.Error())
 		}
 
+		if err := cs.connector.MarkVolumeSnapshotSource(ctx, volFromSnapshot.ID, snapshotID); err != nil {
+			return nil, status.Error(codes.Unavailable, "Snapshot source receipt could not be persisted")
+		}
 		resp := &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
 				VolumeId:      volFromSnapshot.ID,

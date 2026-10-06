@@ -46,10 +46,12 @@ func (c *client) GetSnapshotByID(ctx context.Context, snapshotID string) (*Snaps
 	return &Snapshot{
 		ID:        snapshot.Id,
 		Name:      snapshot.Name,
+		Size:      snapshot.Virtualsize,
 		DomainID:  snapshot.Domainid,
 		ProjectID: snapshot.Projectid,
 		ZoneID:    snapshot.Zoneid,
 		VolumeID:  snapshot.Volumeid,
+		CreatedAt: snapshot.Created,
 	}, nil
 }
 
@@ -107,6 +109,7 @@ func (c *client) GetSnapshotByName(ctx context.Context, name string) (*Snapshot,
 	return &Snapshot{
 		ID:        snapshot.Id,
 		Name:      snapshot.Name,
+		Size:      snapshot.Virtualsize,
 		DomainID:  snapshot.Domainid,
 		ProjectID: snapshot.Projectid,
 		ZoneID:    snapshot.Zoneid,

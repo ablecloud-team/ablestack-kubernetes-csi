@@ -32,9 +32,17 @@ import (
 )
 
 func mapVolume(vol *cloudstack.Volume) *Volume {
+	snapshotID := vol.Snapshotid
+	for _, tag := range vol.Tags {
+		if tag.Key == "mold.csi.snapshot-id" {
+			snapshotID = tag.Value
+		}
+	}
 	return &Volume{
 		ID:               vol.Id,
 		Name:             vol.Name,
+		State:            vol.State,
+		SnapshotID:       snapshotID,
 		Size:             vol.Size,
 		DiskOfferingID:   vol.Diskofferingid,
 		DomainID:         vol.Domainid,
@@ -216,4 +224,11 @@ func (c *client) CreateVolumeFromSnapshot(ctx context.Context, zoneID, name, pro
 		VirtualMachineID: vol.Virtualmachineid,
 		DeviceID:         strconv.FormatInt(vol.Deviceid, 10),
 	}, nil
+}
+
+// MarkVolumeSnapshotSource persists the source receipt before a restore is acknowledged.
+func (c *client) MarkVolumeSnapshotSource(ctx context.Context, volumeID, snapshotID string) error {
+	p := c.Resourcetags.NewCreateTagsParams([]string{volumeID}, "Volume", map[string]string{"mold.csi.snapshot-id": snapshotID})
+	_, err := c.Resourcetags.CreateTags(p)
+	return err
 }
