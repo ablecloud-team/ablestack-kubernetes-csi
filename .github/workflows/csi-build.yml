@@ -59,7 +59,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:trial-${{ github.sha }}
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
-            io.mold.api.signature=HMAC-SHA256
+            io.ablestack.api-signature=HMAC-SHA256
           build-args: |
             LDFLAGS=-s -w -X github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver.gitCommit=${{ github.sha }}
       - name: Image digest
