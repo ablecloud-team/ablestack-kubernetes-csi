@@ -371,43 +371,63 @@ func (cs *controllerServer) CreateSnapshot(ctx context.Context, req *csi.CreateS
 		return nil, status.Error(codes.InvalidArgument, "SourceVolumeId missing in request")
 	}
 
-	volume, err := cs.connector.GetVolumeByID(ctx, volumeID)
-	if err != nil {
-		if err.Error() == "invalid volume ID: empty string" {
-			return nil, status.Error(codes.InvalidArgument, "Invalid volume ID")
+	lockID := "snapshot/" + req.GetName()
+	if !cs.volumeLocks.TryAcquire(lockID) {
+		return nil, status.Error(codes.Aborted, "Snapshot creation already in progress")
+	}
+	defer cs.volumeLocks.Release(lockID)
+
+	// Check the durable receipt before looking up the source volume: retries
+	// must work after that source volume has been deleted.
+	snapshot, err := cs.connector.GetSnapshotByName(ctx, req.GetName())
+	if err != nil && !errors.Is(err, cloud.ErrNotFound) {
+		return nil, status.Error(codes.Internal, "Cannot verify existing snapshot receipt")
+	}
+	if err == nil {
+		if snapshot.VolumeID != volumeID {
+			return nil, status.Error(codes.AlreadyExists, "Snapshot name belongs to another source volume")
 		}
-		if errors.Is(err, cloud.ErrNotFound) {
-			return nil, status.Errorf(codes.NotFound, "Volume %v not found", volumeID)
+	} else {
+		volume, lookupErr := cs.connector.GetVolumeByID(ctx, volumeID)
+		if errors.Is(lookupErr, cloud.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Volume %s not found", volumeID)
 		}
-
-		return nil, status.Errorf(codes.Internal, "Error %v", err)
+		if lookupErr != nil {
+			return nil, status.Error(codes.Internal, "Cannot verify source volume")
+		}
+		snapshot, err = cs.connector.CreateSnapshot(ctx, volume.ID, req.GetName())
+		if errors.Is(err, cloud.ErrAlreadyExists) {
+			return nil, status.Error(codes.AlreadyExists, "Snapshot name belongs to another source volume")
+		}
+		if err != nil {
+			return nil, status.Error(codes.Internal, "Snapshot creation failed")
+		}
 	}
-
-	klog.V(4).Infof("CreateSnapshot of volume: %s", volume.ID)
-	snapshot, err := cs.connector.CreateSnapshot(ctx, volume.ID, req.GetName())
-	if errors.Is(err, cloud.ErrAlreadyExists) {
-		return nil, status.Errorf(codes.AlreadyExists, "Snapshot name conflict: already exists for a different source volume")
-	} else if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to create snapshot for volume %s: %v", volume.ID, err.Error())
+	if snapshot.State == "" || snapshot.State == "Error" || snapshot.State == "Destroyed" || snapshot.State == "Expunging" {
+		return nil, status.Error(codes.FailedPrecondition, "Snapshot receipt is not usable")
 	}
-
-	t, err := time.Parse("2006-01-02T15:04:05-0700", snapshot.CreatedAt)
+	receipt, err := snapshotReceipt(snapshot)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to parse snapshot creation time: %v", err)
+		return nil, err
 	}
-
-	ts := timestamppb.New(t)
-
-	resp := &csi.CreateSnapshotResponse{
-		Snapshot: &csi.Snapshot{
-			SnapshotId:     snapshot.ID,
-			SourceVolumeId: volume.ID,
-			CreationTime:   ts,
-			ReadyToUse:     true,
-		},
-	}
+	resp := &csi.CreateSnapshotResponse{Snapshot: receipt}
 
 	return resp, nil
+}
+
+// snapshotReceipt preserves the backend size and reports readiness from its
+// actual state. Pending or unknown states are never advertised as restorable.
+func snapshotReceipt(snapshot *cloud.Snapshot) (*csi.Snapshot, error) {
+	if snapshot == nil || snapshot.ID == "" || snapshot.VolumeID == "" || snapshot.Size <= 0 {
+		return nil, status.Error(codes.FailedPrecondition, "Snapshot receipt has missing identity or size")
+	}
+	t, err := time.Parse("2006-01-02T15:04:05-0700", snapshot.CreatedAt)
+	if err != nil {
+		return nil, status.Error(codes.FailedPrecondition, "Snapshot receipt has invalid creation time")
+	}
+	return &csi.Snapshot{SnapshotId: snapshot.ID, SourceVolumeId: snapshot.VolumeID,
+		SizeBytes: snapshot.Size, CreationTime: timestamppb.New(t),
+		ReadyToUse: snapshot.State == "BackedUp" || snapshot.State == "CreatedOnPrimary"}, nil
 }
 
 func (cs *controllerServer) ListSnapshots(ctx context.Context, req *csi.ListSnapshotsRequest) (*csi.ListSnapshotsResponse, error) {
@@ -439,16 +459,11 @@ func (cs *controllerServer) ListSnapshots(ctx context.Context, req *csi.ListSnap
 
 	for i := start; i < end; i++ {
 		snap := snapshots[i]
-		t, _ := time.Parse("2006-01-02T15:04:05-0700", snap.CreatedAt)
-		ts := timestamppb.New(t)
-		entry := &csi.ListSnapshotsResponse_Entry{
-			Snapshot: &csi.Snapshot{
-				SnapshotId:     snap.ID,
-				SourceVolumeId: snap.VolumeID,
-				CreationTime:   ts,
-				ReadyToUse:     true,
-			},
+		receipt, receiptErr := snapshotReceipt(snap)
+		if receiptErr != nil {
+			return nil, receiptErr
 		}
+		entry := &csi.ListSnapshotsResponse_Entry{Snapshot: receipt}
 		entries = append(entries, entry)
 	}
 

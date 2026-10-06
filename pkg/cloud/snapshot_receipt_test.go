@@ -32,13 +32,13 @@ import (
 
 func TestSnapshotLookupsPreserveSizeAndCreationTime(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{"listsnapshotsresponse":{"count":1,"snapshot":[{"id":"snap-1","name":"snapshot-pvc","virtualsize":4294967296,"created":"2026-10-06T18:10:42+0000","volumeid":"vol-1"}]}}`)
+		fmt.Fprint(w, `{"listsnapshotsresponse":{"count":1,"snapshot":[{"id":"snap-1","name":"snapshot-pvc","state":"BackedUp","virtualsize":4294967296,"created":"2026-10-06T18:10:42+0000","volumeid":"vol-1"}]}}`)
 	}))
 	defer server.Close()
 	c := New(&Config{APIURL: server.URL, APIKey: "fixture", SecretKey: "fixture", VerifySSL: true})
 	for _, lookup := range []func(context.Context, string) (*Snapshot, error){c.GetSnapshotByID, c.GetSnapshotByName} {
 		s, err := lookup(context.Background(), "snap-1")
-		if err != nil || s.Size != 4294967296 || s.CreatedAt == "" {
+		if err != nil || s.Size != 4294967296 || s.CreatedAt == "" || s.State != "BackedUp" {
 			t.Fatalf("snapshot metadata lost: %+v %v", s, err)
 		}
 	}

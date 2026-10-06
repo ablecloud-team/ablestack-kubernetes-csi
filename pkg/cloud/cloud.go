@@ -76,9 +76,10 @@ type Volume struct {
 
 // Snapshot represents a CloudStack snapshot.
 type Snapshot struct {
-	ID   string
-	Name string
-	Size int64
+	ID    string
+	Name  string
+	Size  int64
+	State string
 
 	DomainID  string
 	ProjectID string
