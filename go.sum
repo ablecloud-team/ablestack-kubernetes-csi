@@ -1,3 +1,5 @@
+github.com/apache/cloudstack-go/v2 v2.19.1 h1:1K5O4NZpdWzOZUN6XuaVNsdX+QnoFRc5VE/oc1nUckQ=
+github.com/apache/cloudstack-go/v2 v2.19.1/go.mod h1:p/YBUwIEkQN6CQxFhw8Ff0wzf1MY0qRRRuGYNbcb1F8=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
@@ -8,6 +10,8 @@ github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
+github.com/cloudstack/cloudstack-csi-driver v0.0.0-20260924155126-206ccb52ea97 h1:OCiYwRMjrFQjNOe1JO47eyoUajfMr5+bcSPS+jeXftI=
+github.com/cloudstack/cloudstack-csi-driver v0.0.0-20260924155126-206ccb52ea97/go.mod h1:YF67ElYLmZZqOuzNacAEZkq61eNoxAC0YeeZHG0g3a8=
 github.com/container-storage-interface/spec v1.9.0 h1:zKtX4STsq31Knz3gciCYCi1SXtO2HJDecIjDVboYavY=
 github.com/container-storage-interface/spec v1.9.0/go.mod h1:ZfDu+3ZRyeVqxZM0Ds19MVLkN2d1XJ5MAfi1L3VjlT0=
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
@@ -208,8 +212,8 @@ gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 k8s.io/api v0.29.7 h1:Q2/thp7YYESgy0MGzxT9RvA/6doLJHBXSFH8GGLxSbc=
 k8s.io/api v0.29.7/go.mod h1:mPimdbyuIjwoLtBEVIGVUYb4BKOE+44XHt/n4IqKsLA=
-k8s.io/apimachinery v0.29.7 h1:ICXzya58Q7hyEEfnTrbmdfX1n1schSepX2KUfC2/ykc=
-k8s.io/apimachinery v0.29.7/go.mod h1:i3FJVwhvSp/6n8Fl4K97PJEP8C+MM+aoDq4+ZJBf70Y=
+k8s.io/apimachinery v0.29.15 h1:aLc0wghElkdnTO7TMVTxTrifoXah1lqRL8s6szDHGbg=
+k8s.io/apimachinery v0.29.15/go.mod h1:i3FJVwhvSp/6n8Fl4K97PJEP8C+MM+aoDq4+ZJBf70Y=
 k8s.io/client-go v0.29.7 h1:vTtiFrGBKlcBhxaeZC4eDrqui1e108nsTyue/KU63IY=
 k8s.io/client-go v0.29.7/go.mod h1:69BvVqdRozgR/9TP45u/oO0tfrdbP+I8RqrcCJQshzg=
 k8s.io/component-base v0.29.7 h1:zXLJvZjvvDWdYmZCwZYk95E1Fd2oRXUz71mQukkRk5I=
