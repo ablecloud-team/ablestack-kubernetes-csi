@@ -30,7 +30,7 @@ jobs:
           PYCODE
       - run: go test ./...
       - run: make build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: csi-linux-amd64-${{ github.sha }}
           path: bin/
