@@ -1,5 +1,3 @@
-github.com/apache/cloudstack-go/v2 v2.19.1 h1:1K5O4NZpdWzOZUN6XuaVNsdX+QnoFRc5VE/oc1nUckQ=
-github.com/apache/cloudstack-go/v2 v2.19.1/go.mod h1:p/YBUwIEkQN6CQxFhw8Ff0wzf1MY0qRRRuGYNbcb1F8=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
@@ -17,6 +15,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dhslove/ablestack-mold-go/v2 v2.19.2-mold-test.2 h1:ybMETBlhHuwlLPd3WraFPXGWhN6fK988ewDdLjqCgrw=
+github.com/dhslove/ablestack-mold-go/v2 v2.19.2-mold-test.2/go.mod h1:kYf3+hW8ovxNiscRdtTjMiXXcu8OGntKhHIrytbRkVA=
 github.com/emicklei/go-restful/v3 v3.11.0 h1:rAQeMHw1c7zTmncogyy8VvRZwtkmkZ4FxERmMY4rD+g=
 github.com/emicklei/go-restful/v3 v3.11.0/go.mod h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=

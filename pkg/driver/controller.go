@@ -35,8 +35,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"k8s.io/klog/v2"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/util"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/util"
 )
 
 // onlyVolumeCapAccessMode is the only volume capability access

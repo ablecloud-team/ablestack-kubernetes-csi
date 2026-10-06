@@ -1,11 +1,11 @@
-module github.com/cloudstack/cloudstack-csi-driver
+module github.com/ablecloud-team/ablestack-kubernetes-csi
 
 go 1.23.0
 
 toolchain go1.23.5
 
 require (
-	github.com/apache/cloudstack-go/v2 v2.19.1
+	github.com/ablecloud-team/ablestack-mold-go/v2 v2.19.2-mold-test.2
 	github.com/container-storage-interface/spec v1.9.0
 	github.com/hashicorp/go-uuid v1.0.3
 	github.com/kubernetes-csi/csi-lib-utils v0.17.0
@@ -79,3 +79,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/ablecloud-team/ablestack-mold-go/v2 => github.com/dhslove/ablestack-mold-go/v2 v2.19.2-mold-test.2

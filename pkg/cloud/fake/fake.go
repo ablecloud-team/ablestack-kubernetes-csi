@@ -27,8 +27,8 @@ import (
 
 	"github.com/hashicorp/go-uuid"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/util"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/util"
 )
 
 const zoneID = "a1887604-237c-4212-a9cd-94620b7880fa"

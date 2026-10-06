@@ -25,10 +25,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/apache/cloudstack-go/v2/cloudstack"
+	"github.com/ablecloud-team/ablestack-mold-go/v2/cloudstack"
 	"k8s.io/klog/v2"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/util"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/util"
 )
 
 func mapVolume(vol *cloudstack.Volume) *Volume {

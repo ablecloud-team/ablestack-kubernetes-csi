@@ -29,7 +29,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/syncer"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/syncer"
 )
 
 const agent = "cloudstack-csi-sc-syncer"

@@ -37,8 +37,8 @@ import (
 	"k8s.io/component-base/logs/json"
 	"k8s.io/klog/v2"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/driver"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver"
 )
 
 func main() {

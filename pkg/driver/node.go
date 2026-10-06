@@ -32,9 +32,9 @@ import (
 	"google.golang.org/grpc/status"
 	"k8s.io/klog/v2"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/mount"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/util"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/mount"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/util"
 )
 
 const (

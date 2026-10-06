@@ -28,13 +28,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apache/cloudstack-go/v2/cloudstack"
+	"github.com/ablecloud-team/ablestack-mold-go/v2/cloudstack"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud"
 )
 
 // Config holds the syncer tool configuration.
