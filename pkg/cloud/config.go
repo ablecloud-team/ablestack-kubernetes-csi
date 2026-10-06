@@ -45,6 +45,7 @@ type csConfig struct {
 		SecretKey   string `gcfg:"secret-key"`
 		SSLNoVerify bool   `gcfg:"ssl-no-verify"`
 		ProjectID   string `gcfg:"project-id"`
+		ClusterUUID string `gcfg:"cluster-uuid"`
 		Zone        string `gcfg:"zone"`
 	}
 }
