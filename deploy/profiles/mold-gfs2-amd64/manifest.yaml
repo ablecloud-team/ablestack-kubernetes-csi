@@ -312,7 +312,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: cloudstack-csi-controller
-        image: ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:e1ef5f7df4dbd155d0e57f6faa0b727b23a79482fa7dac0f5bbfff69932d0afb
+        image: ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:6daa34c4f28dcac481d9dd556ca1d7c640715ba4a2e941be241eee07c87c1e1b
         imagePullPolicy: IfNotPresent
         args:
         - controller
@@ -524,7 +524,7 @@ spec:
         fsGroup: 0
       containers:
       - name: cloudstack-csi-node
-        image: ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:e1ef5f7df4dbd155d0e57f6faa0b727b23a79482fa7dac0f5bbfff69932d0afb
+        image: ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:6daa34c4f28dcac481d9dd556ca1d7c640715ba4a2e941be241eee07c87c1e1b
         imagePullPolicy: IfNotPresent
         args:
         - node

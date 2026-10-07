@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "apiSignature": "HmacSHA256",
-  "driverImage": "ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:e1ef5f7df4dbd155d0e57f6faa0b727b23a79482fa7dac0f5bbfff69932d0afb",
-  "binarySource": "67ccfd98668e0979771acc7084f893d2b0b4f12b",
+  "driverImage": "ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:6daa34c4f28dcac481d9dd556ca1d7c640715ba4a2e941be241eee07c87c1e1b",
+  "binarySource": "a135d6fc75fd71047228b02cff632d3415796ae7",
   "sdk": {
     "module": "github.com/ablecloud-team/ablestack-mold-go/v2",
-    "version": "v2.19.2-mold-test.3",
-    "source": "25574a288d86e638c058721c919bb43e33c4485f"
+    "version": "v2.19.2-mold.1",
+    "source": "06c94ac6637fe03b795cef10ba1afde1d1e8ef8c"
   },
-  "qualification": "origin-trial-runtime-gates-required",
+  "qualification": "europa-gfs2-representative-runtime-and-official-sdk-build",
   "files": {
-    "manifest.yaml": "10f01e77c751070d0dda7be37e8bab168880337c79364adcdbbd7cedf158911c",
+    "manifest.yaml": "bc1a9389f2888bb920684c9b4e70b7d980c9432a86426a1a333e990894e8e598",
     "snapshot-crds.yaml": "d27e8aff5361dc85a4e5e09ea65194f54f4a567c2a50698a939bcf0149a4b841"
   },
   "images": {
-    "ghcr.io/cloudstack/cloudstack-csi-driver:main": "ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:e1ef5f7df4dbd155d0e57f6faa0b727b23a79482fa7dac0f5bbfff69932d0afb",
+    "ghcr.io/cloudstack/cloudstack-csi-driver:main": "ghcr.io/dhslove/ablestack-kubernetes-csi@sha256:6daa34c4f28dcac481d9dd556ca1d7c640715ba4a2e941be241eee07c87c1e1b",
     "registry.k8s.io/sig-storage/csi-provisioner:v5.0.1": "registry.k8s.io/sig-storage/csi-provisioner@sha256:94add3feccf10c5191059f338e51d3a1f3ef5012e4e37ea8bd28c1a8d3d393eb",
     "registry.k8s.io/sig-storage/csi-attacher:v4.6.1": "registry.k8s.io/sig-storage/csi-attacher@sha256:a70202a7cb71dd692c4299514951ead0485345bf64d9381a09f06490d39ebf43",
     "registry.k8s.io/sig-storage/csi-resizer:v1.11.1": "registry.k8s.io/sig-storage/csi-resizer@sha256:d435d5bb8637f4c0229c5eb5ce515f0718ee5dc55a49128a163f40b2a497af73",
@@ -30,5 +30,5 @@
     "1.37"
   ],
   "sourceRepository": "dhslove/ablestack-kubernetes-csi",
-  "buildRun": "https://github.com/dhslove/ablestack-kubernetes-csi/actions/runs/37523098210"
+  "buildRun": "https://github.com/dhslove/ablestack-kubernetes-csi/actions/runs/37657268622"
 }

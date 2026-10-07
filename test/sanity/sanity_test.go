@@ -30,9 +30,9 @@ import (
 
 	"k8s.io/klog/v2"
 
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/cloud/fake"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/driver"
-	"github.com/cloudstack/cloudstack-csi-driver/pkg/mount"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/cloud/fake"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver"
+	"github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/mount"
 	"github.com/kubernetes-csi/csi-test/v5/pkg/sanity"
 )
 
