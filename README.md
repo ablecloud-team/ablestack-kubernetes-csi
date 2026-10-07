@@ -32,7 +32,7 @@ gh run list --workflow csi-build.yml
 
 ## 시험과 배포 조건
 
-Europa 31의 KVM/GFS2 Primary에서 별도 클러스터의 Kubernetes 1.34.12·1.35.9·1.36.5·1.37.1 조합으로 CSI 수명주기를 검증했습니다. [실환경 판정과 한계](https://github.com/ablecloud-team/ablestack-cloud/blob/c169d9a203f49ce07e038297873bc3c24cd8ffb4/docs/operations/kubernetes-lifecycle/qualification-20261007.md)를 확인하세요. 1.37.1은 Mold 운영 범위에서 사용자의 production 판정을 반영합니다. 원본 프로젝트 지원 선언이나 모든 patch 버전의 개별 재시험을 뜻하지 않습니다. 이번 정식 SDK 빌드는 시험 SDK와 동일한 구현 내용 및 내부 드라이버 코드의 연속성을 확인하고 빌드/race/sanity 검증을 추가합니다. 1.34.2·1.34.9의 CSI 개별 실환경 시험과 이 새 바이너리의 전체 버전 재배포는 별도입니다.
+Europa 31의 KVM/GFS2 Primary에서 별도 클러스터의 Kubernetes 1.34.12·1.35.9·1.36.5·1.37.1 조합으로 CSI 수명주기를 검증했습니다. [실환경 판정과 한계](https://github.com/ablecloud-team/ablestack-cloud/blob/c169d9a203f49ce07e038297873bc3c24cd8ffb4/docs/operations/kubernetes-lifecycle/qualification-20261007.md)를 확인하세요. 1.37.1 AutoScaler의 사용자 Mold 프로덕션 판정은 해당 기능의 별도 판정으로 유지합니다. CSI는 위 대표 실환경 검증 범위를 적용합니다. 원본 프로젝트 지원 선언이나 모든 patch 버전의 개별 재시험을 뜻하지 않습니다. 이번 정식 SDK 빌드는 시험 SDK와 동일한 구현 내용 및 내부 드라이버 코드의 연속성을 확인하고 빌드/race/sanity 검증을 추가합니다. 1.34.2·1.34.9의 CSI 개별 실환경 시험과 이 새 바이너리의 전체 버전 재배포는 별도입니다.
 
 - Kubernetes CCM과 동일한 `kube-system/cloudstack-secret` 형식과 계정/프로젝트 범위를 사용합니다. 자격증명은 Git·이미지·ISO에 넣지 않습니다.
 - `deploy/k8s`는 원본 참고 manifest입니다. 공식 Release의 내부 드라이버와 sidecar digest를 고정한 profile을 사용하고 실제 imageID 및 바이너리 source를 확인한 뒤 사용합니다. 원본 manifest의 외부 `main` 이미지를 그대로 설치하지 않습니다.

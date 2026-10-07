@@ -1,0 +1,12 @@
+ABLESTACK Kubernetes CSI
+SPDX-License-Identifier: Apache-2.0
+Licensed under the Apache License, Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0
+
+This distribution contains code derived from the Apache CloudStack CSI Driver:
+https://github.com/cloudstack/cloudstack-csi-driver
+
+Original Apache Software Foundation license and contributor notices are retained
+in the source files. Mold customizations use HMAC-SHA256 API authentication and
+provide the qualified KVM/GFS2 storage profile. Third-party Go module identities
+and versions are recorded in go-modules.txt; their licenses remain applicable.
