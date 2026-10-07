@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Publish Origin trial driver image to this repository GHCR
+        description: Build a digest-locked image and release bundle in this repository GHCR
         type: boolean
         default: false
 permissions:
@@ -31,7 +31,14 @@ jobs:
               raise SystemExit('Missing Apache notices: ' + ', '.join(missing))
           print('All Go source Apache license notices present')
           PYCODE
-      - run: go test ./...
+      - name: Official SDK dependency contract
+        run: |
+          go list -m all > go-modules.txt
+          ! grep -E 'github.com/(apache/cloudstack-go|cloudstack/cloudstack-csi-driver|dhslove/ablestack-mold-go)|mold-test' go-modules.txt
+          test "$(go list -m -f '{{.Version}}' github.com/ablecloud-team/ablestack-mold-go/v2)" = v2.19.2-mold.1
+          test -z "$(go list -m -f '{{if .Replace}}{{.Replace.Path}}{{end}}' github.com/ablecloud-team/ablestack-mold-go/v2)"
+      - run: go test -race ./...
+      - run: make test-sanity
       - run: make build
       - uses: actions/upload-artifact@v4
         with:
@@ -46,12 +53,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v4
+        with:
+          name: csi-linux-amd64-${{ github.sha }}
+          path: bin
+      - run: chmod +x bin/*
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set build variables
+        id: vars
+        run: |
+          echo "date=$(date -u -Iseconds)" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}:mold-r1-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v6
         id: driver
         with:
@@ -59,11 +79,34 @@ jobs:
           file: cmd/cloudstack-csi-driver/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}:trial-${{ github.sha }}
+          tags: ${{ steps.vars.outputs.image }}
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
             io.ablestack.api-signature=HMAC-SHA256
           build-args: |
-            LDFLAGS=-s -w -X github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver.gitCommit=${{ github.sha }}
-      - name: Image digest
-        run: echo 'Driver digest ${{ steps.driver.outputs.digest }}' >> "$GITHUB_STEP_SUMMARY"
+            LDFLAGS=-s -w -X github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver.driverVersion=mold-r1-${{ github.sha }} -X github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver.gitCommit=${{ github.sha }} -X github.com/ablecloud-team/ablestack-kubernetes-csi/pkg/driver.buildDate=${{ steps.vars.outputs.date }}
+      - name: Verify image and package immutable release bundle
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}@${{ steps.driver.outputs.digest }}
+          SOURCE_SHA: ${{ github.sha }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          docker pull "$IMAGE"
+          docker run --rm "$IMAGE" --version > release/image-version.json
+          docker create --name csi-release "$IMAGE"
+          docker cp csi-release:/cloudstack-csi-driver release/image-driver-linux-amd64
+          docker rm csi-release
+          go version -m release/image-driver-linux-amd64 > release/image-driver-buildinfo.txt
+          grep -F 'github.com/ablecloud-team/ablestack-mold-go/v2' release/image-driver-buildinfo.txt | grep -F v2.19.2-mold.1
+          ! grep -E 'mold-test|github.com/(apache/cloudstack-go|dhslove/ablestack-mold-go)' release/image-driver-buildinfo.txt
+          python3 -c 'import json, os; v=json.load(open("release/image-version.json")); assert os.environ["SOURCE_SHA"] in json.dumps(v)'
+          docker save "$IMAGE" | gzip -n > release/image-amd64.tar.gz
+          python3 scripts/release_bundle.py --output release --image "$IMAGE" --source "$SOURCE_SHA" --repository "$GITHUB_REPOSITORY" --run-url "$RUN_URL"
+          (cd release && sha256sum --check SHA256SUMS)
+          echo "Driver digest $IMAGE" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: csi-release-amd64-${{ github.sha }}
+          path: release/

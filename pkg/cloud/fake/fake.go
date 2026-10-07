@@ -118,6 +118,7 @@ func (f *fakeConnector) CreateVolume(_ context.Context, diskOfferingID, zoneID, 
 		Size:           util.GigaBytesToBytes(sizeInGB),
 		DiskOfferingID: diskOfferingID,
 		ZoneID:         zoneID,
+		State:          "Allocated",
 	}
 	f.volumesByID[vol.ID] = vol
 	f.volumesByName[vol.Name] = vol

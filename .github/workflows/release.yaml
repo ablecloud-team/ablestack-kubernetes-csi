@@ -17,6 +17,8 @@ env:
 jobs:
   push:
     name: Push images
+    # The inherited workflow belongs to the Apache upstream registry.
+    if: github.repository == 'cloudstack/cloudstack-csi-driver'
     runs-on: ubuntu-24.04
 
     steps:
