@@ -34,22 +34,33 @@ func (c *client) GetSnapshotByID(ctx context.Context, snapshotID string) (*Snaps
 		"id": snapshotID,
 	})
 
-	snapshot, count, err := c.Snapshot.GetSnapshotByID(snapshotID)
+	p := c.Snapshot.NewListSnapshotsParams()
+	p.SetId(snapshotID)
+	if c.projectID != "" {
+		p.SetProjectid(c.projectID)
+	}
+	result, err := c.Snapshot.ListSnapshots(p)
 	if err != nil {
-		if count == 0 {
-			return nil, ErrNotFound
-		}
-
 		return nil, err
 	}
+	if len(result.Snapshots) == 0 {
+		return nil, ErrNotFound
+	}
+	if len(result.Snapshots) != 1 {
+		return nil, ErrAlreadyExists
+	}
+	snapshot := result.Snapshots[0]
 
 	return &Snapshot{
 		ID:        snapshot.Id,
 		Name:      snapshot.Name,
+		Size:      snapshot.Virtualsize,
 		DomainID:  snapshot.Domainid,
 		ProjectID: snapshot.Projectid,
 		ZoneID:    snapshot.Zoneid,
 		VolumeID:  snapshot.Volumeid,
+		CreatedAt: snapshot.Created,
+		State:     snapshot.State,
 	}, nil
 }
 
@@ -76,6 +87,7 @@ func (c *client) CreateSnapshot(ctx context.Context, volumeID, name string) (*Sn
 		ZoneID:    snapshot.Zoneid,
 		VolumeID:  snapshot.Volumeid,
 		CreatedAt: snapshot.Created,
+		State:     snapshot.State,
 	}, nil
 }
 
@@ -95,23 +107,33 @@ func (c *client) GetSnapshotByName(ctx context.Context, name string) (*Snapshot,
 	logger.V(2).Info("CloudStack API call", "command", "GetSnapshotByName", "params", map[string]string{
 		"name": name,
 	})
-	snapshot, count, err := c.Snapshot.GetSnapshotByName(name)
+	p := c.Snapshot.NewListSnapshotsParams()
+	p.SetName(name)
+	if c.projectID != "" {
+		p.SetProjectid(c.projectID)
+	}
+	result, err := c.Snapshot.ListSnapshots(p)
 	if err != nil {
-		if count == 0 {
-			return nil, ErrNotFound
-		}
-
 		return nil, err
 	}
+	if len(result.Snapshots) == 0 {
+		return nil, ErrNotFound
+	}
+	if len(result.Snapshots) != 1 {
+		return nil, ErrAlreadyExists
+	}
+	snapshot := result.Snapshots[0]
 
 	return &Snapshot{
 		ID:        snapshot.Id,
 		Name:      snapshot.Name,
+		Size:      snapshot.Virtualsize,
 		DomainID:  snapshot.Domainid,
 		ProjectID: snapshot.Projectid,
 		ZoneID:    snapshot.Zoneid,
 		VolumeID:  snapshot.Volumeid,
 		CreatedAt: snapshot.Created,
+		State:     snapshot.State,
 	}, nil
 }
 
@@ -154,6 +176,7 @@ func (c *client) ListSnapshots(ctx context.Context, volumeID, snapshotID string)
 			ZoneID:    snapshot.Zoneid,
 			VolumeID:  snapshot.Volumeid,
 			CreatedAt: snapshot.Created,
+			State:     snapshot.State,
 		}
 		result = append(result, s)
 	}

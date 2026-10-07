@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: Apache-2.0
+Licensed under the Apache License, Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0
+-->
 # ABLESTACK Kubernetes CSI
 
 Mold HMAC-SHA256 API 인증을 사용하는 Kubernetes CSI 드라이버입니다. CloudStack CSI의 `main` commit `206ccb52ea976350173ebfcbccb542445996f2de`(SDK v2.19.1 업데이트 포함)을 기준으로 하며, 내부 Mold SDK v2.19.2-mold-test.2를 사용합니다. 원본 설명과 지원 기능은 [README.cloudstack.md](README.cloudstack.md)에 보존합니다.
@@ -38,3 +43,15 @@ gh run list --workflow csi-build.yml
 ## 라이선스
 
 Apache-2.0. 기존 저작권/라이선스 고지와 원본 Git 이력을 보존합니다. 전체 Cloud 통합 빌드와 공식 이미지/ISO Release 승격은 최종 Release 단계에서 별도로 수행합니다.
+
+### Mold snapshot 복원 재시도
+
+CSI용 API 키에는 snapshot API와 함께 `createTags` 권한이 필요합니다. 복원이 완료되면 Volume에 `mold.csi.snapshot-id` 태그로 원본 snapshot UUID를 저장합니다. 재시도는 같은 snapshot 영수증과 `Ready` 상태를 확인한 후 ContentSource를 다시 반환합니다. `Creating`, `Destroy` 또는 원본 영수증이 없는 볼륨을 성공으로 처리하지 않습니다. `Allocated` 상태는 snapshot을 사용하지 않은 빈 볼륨 생성에만 허용합니다. 기존 실패 볼륨은 운영자가 원인과 소유권을 확인하여 정리해야 합니다.
+
+Snapshot 조회 경로는 API의 `virtualsize`와 생성 시각을 유지합니다. 이 동작은 Mold의 파일 기반 KVM snapshot 저장소 경로 수정(#1283)과 함께 검증해야 합니다.
+
+### Volume attachment identity and recovery
+
+The Mold KVM profile selects a block device only when its udev serial exactly matches the requested volume UUID or CloudStack's 20-character KVM serial. A readable disk, mount state, or a serial substring does not establish identity. This applies to direct devices and by-id links, including when a previous PVC's asynchronous detach is still pending.
+
+A staging path occupied by a different or unknown device returns `FailedPrecondition`. The driver does not format over or force-unmount that path. Delete the owning Pod normally, allow kubelet's NodeUnpublish/NodeUnstage and the CSI attachment controller to finish, then retry the workload. Retain PVs and their Mold volumes remain intact. Verify the original file checksum after reattachment; Pod Ready alone does not prove data recovery. Current storage qualification targets Mold KVM with GFS2 Primary; other hypervisor serial formats require separate qualification.

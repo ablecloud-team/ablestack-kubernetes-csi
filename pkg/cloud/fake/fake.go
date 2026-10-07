@@ -178,15 +178,21 @@ func (f *fakeConnector) CreateSnapshot(_ context.Context, volumeID, name string)
 	}
 	for _, snap := range f.snapshotsByName[name] {
 		if snap.VolumeID == volumeID {
-			// Allow multiple snapshots with the same name for the same volume
-			continue
+			// Reuse the existing receipt for an idempotent request.
+			return snap, nil
 		}
 
 		// Name conflict: same name, different volume
 		return nil, cloud.ErrAlreadyExists
 	}
+	volume, exists := f.volumesByID[volumeID]
+	if !exists {
+		return nil, cloud.ErrNotFound
+	}
 	id, _ := uuid.GenerateUUID()
 	newSnap := &cloud.Snapshot{
+		Size:      volume.Size,
+		State:     "BackedUp",
 		ID:        id,
 		Name:      name,
 		DomainID:  "fake-domain",
@@ -273,5 +279,16 @@ func (f *fakeConnector) DeleteSnapshot(_ context.Context, snapshotID string) err
 		}
 	}
 
+	return nil
+}
+
+func (f *fakeConnector) MarkVolumeSnapshotSource(_ context.Context, volumeID, snapshotID string) error {
+	v, ok := f.volumesByID[volumeID]
+	if !ok {
+		return cloud.ErrNotFound
+	}
+	v.SnapshotID = snapshotID
+	f.volumesByID[volumeID] = v
+	f.volumesByName[v.Name] = v
 	return nil
 }

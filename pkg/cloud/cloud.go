@@ -46,6 +46,7 @@ type Interface interface {
 	DetachVolume(ctx context.Context, volumeID string) error
 	ExpandVolume(ctx context.Context, volumeID string, newSizeInGB int64) error
 
+	MarkVolumeSnapshotSource(ctx context.Context, volumeID, snapshotID string) error
 	CreateVolumeFromSnapshot(ctx context.Context, zoneID, name, projectID, snapshotID string, sizeInGB int64) (*Volume, error)
 	GetSnapshotByID(ctx context.Context, snapshotID string) (*Snapshot, error)
 	GetSnapshotByName(ctx context.Context, name string) (*Snapshot, error)
@@ -56,8 +57,10 @@ type Interface interface {
 
 // Volume represents a CloudStack volume.
 type Volume struct {
-	ID   string
-	Name string
+	ID         string
+	Name       string
+	State      string
+	SnapshotID string
 
 	// Size in Bytes
 	Size int64
@@ -73,9 +76,10 @@ type Volume struct {
 
 // Snapshot represents a CloudStack snapshot.
 type Snapshot struct {
-	ID   string
-	Name string
-	Size int64
+	ID    string
+	Name  string
+	Size  int64
+	State string
 
 	DomainID  string
 	ProjectID string

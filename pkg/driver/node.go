@@ -158,7 +158,7 @@ func (ns *nodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 	}
 
 	// Check if a device is mounted in target directory
-	device, _, err := ns.mounter.GetDeviceName(target)
+	device, references, err := ns.mounter.GetDeviceName(target)
 	if err != nil {
 		msg := fmt.Sprintf("failed to check if volume is already mounted: %v", err)
 
@@ -169,7 +169,14 @@ func (ns *nodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 	// If the volume corresponding to the volume_id is already staged to the staging_target_path,
 	// and is identical to the specified volume_capability the Plugin MUST reply 0 OK.
 	logger.V(4).Info("NodeStageVolume: checking if volume is already staged", "device", device, "source", source, "target", target)
-	if device == source {
+	if device != "" || references != 0 {
+		// Mount helpers may consider an occupied target a successful mount even
+		// when it still refers to a detached device. Never format or mount over
+		// that target: kubelet must unpublish and unstage the previous attachment.
+		if !sameDevicePath(device, source) {
+			return nil, status.Errorf(codes.FailedPrecondition,
+				"staging target %q is mounted from %q, expected %q; unpublish and unstage the previous attachment before retrying", target, device, source)
+		}
 		logger.V(4).Info("NodeStageVolume: volume already staged", "volumeID", volumeID)
 
 		return &csi.NodeStageVolumeResponse{}, nil
@@ -197,6 +204,26 @@ func (ns *nodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 	logger.V(4).Info("NodeStageVolume: successfully staged volume", "source", source, "volumeID", volumeID, "target", target, "fstype", fsType)
 
 	return &csi.NodeStageVolumeResponse{}, nil
+}
+
+// sameDevicePath accepts kernel device paths and their stable by-id symlinks.
+// An unresolved different path is never accepted as evidence of identity.
+func sameDevicePath(mounted, source string) bool {
+	if mounted == "" || source == "" {
+		return false
+	}
+	if filepath.Clean(mounted) == filepath.Clean(source) {
+		return true
+	}
+	mountedPath, err := filepath.EvalSymlinks(mounted)
+	if err != nil {
+		return false
+	}
+	sourcePath, err := filepath.EvalSymlinks(source)
+	if err != nil {
+		return false
+	}
+	return mountedPath == sourcePath
 }
 
 // hasMountOption returns a boolean indicating whether the given
