@@ -10,7 +10,7 @@
   },
   "qualification": "origin-trial-runtime-gates-required",
   "files": {
-    "manifest.yaml": "de166afa047dc9a5e8df6889669ef5ade71f004d289a267035e81c247df36144",
+    "manifest.yaml": "10f01e77c751070d0dda7be37e8bab168880337c79364adcdbbd7cedf158911c",
     "snapshot-crds.yaml": "d27e8aff5361dc85a4e5e09ea65194f54f4a567c2a50698a939bcf0149a4b841"
   },
   "images": {
