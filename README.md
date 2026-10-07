@@ -42,7 +42,7 @@ Europa 31의 KVM/GFS2 Primary에서 별도 클러스터의 Kubernetes 1.34.12·1
 
 ## 릴리즈 사용과 CSI ISO
 
-공식 [Releases](https://github.com/ablecloud-team/ablestack-kubernetes-csi/releases)에서 Mold CSI 릴리즈의 `SHA256SUMS`, `profile.json`, `manifest.yaml`, `snapshot-crds.yaml`, `provenance.json`을 받습니다. `cloudstack-csi-*` chart 태그만 받은 것은 내부 SHA256 드라이버 설치가 아닙니다. archive와 Linux 바이너리는 offline 보관 및 진단용입니다. Kubernetes에서는 `profile.json.driverImage`의 digest를 설치합니다. Git에 있는 이전 프로파일과 새 Release 파일을 섞지 마세요.
+공식 [Mold CSI 릴리즈](https://github.com/ablecloud-team/ablestack-kubernetes-csi/releases/tag/mold-csi-r1-a135d6fc75fd)에서 `SHA256SUMS`, `profile.json`, `manifest.yaml`, `snapshot-crds.yaml`, `provenance.json`을 받습니다. `cloudstack-csi-*` chart 태그만 받은 것은 내부 SHA256 드라이버 설치가 아닙니다. archive와 Linux 바이너리는 offline 보관 및 진단용입니다. Kubernetes에서는 `profile.json.driverImage`의 digest를 설치합니다. `deploy/profiles/mold-gfs2-amd64`는 이 릴리즈의 manifest/profile을 동일 내용으로 고정합니다. 다른 릴리즈의 파일과 섞지 마세요.
 
 ```bash
 sha256sum --check SHA256SUMS
